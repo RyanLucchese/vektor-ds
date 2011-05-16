@@ -20,4 +20,4 @@ AC_CHECK_HEADERS([arpa/inet.h fcntl.h netinet/in.h string.h sys/socket.h unistd.
 # Checks for library functions.
 AC_CHECK_FUNCS([inet_ntoa memset select socket])
 
-AC_OUTPUT(Makefile)
+AC_OUTPUT(Makefile src/Makefile)
