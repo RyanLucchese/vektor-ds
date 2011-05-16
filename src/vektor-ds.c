@@ -2,7 +2,7 @@
 
 int init(void)
 {
-	int port, i, ssock_opts;
+	int port, i, ssock_opts, reusesocket = 1;
 	
 	memset(&server_addr,'\0',sizeof(server_addr));
 	for(i=0; i <= MAX_CLIENTS; i++)
@@ -11,17 +11,28 @@ int init(void)
 		memset(&client_addr[i],'\0',sizeof(client_addr[i]));
 	}
 
-	port=57157;
-	client_index=0;
+	port = 57157;
+	client_index = 0;
 
-	ssockfd = socket(AF_INET, SOCK_STREAM, 0);
+	if((ssockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+	{
+		fprintf(stderr, "Error creating socket!");
+		return -1;
+	}
+	
+	if(setsockopt(ssockfd, SOL_SOCKET, SO_REUSEADDR, &reusesocket, sizeof(int)) == -1)
+	{
+		fprintf(stderr, "Error setting SO_REUSEADDR socket option!");
+		return -1;
+	}
+	
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = INADDR_ANY;
 	server_addr.sin_port = htons(port);
 
 	if(bind(ssockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
 	{
-		printf("Error binding to port!\n");
+		fprintf(stderr, "Error binding to socket!\n");
 		return -1;
 	}
 
