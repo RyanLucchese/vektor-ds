@@ -4,7 +4,7 @@
 AC_PREREQ([2.65])
 AC_INIT([vektor-ds], [0.1], [ryan.lucchese@gmail.com])
 AM_INIT_AUTOMAKE([vektor-ds],[0.1])
-AC_CONFIG_SRCDIR([vektor-ds.h])
+AC_CONFIG_SRCDIR([src/vektor-ds.h])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.

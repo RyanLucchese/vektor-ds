@@ -557,7 +557,7 @@ PACKAGE_STRING='vektor-ds 0.1'
 PACKAGE_BUGREPORT='ryan.lucchese@gmail.com'
 PACKAGE_URL=''
 
-ac_unique_file="vektor-ds.h"
+ac_unique_file="src/vektor-ds.h"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
