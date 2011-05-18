@@ -41,10 +41,11 @@ int main(int argc, char ** argv)
 {
 	int server_id;
 	struct sockaddr_in *clients;
+	struct sockaddr_in tmp_client;
 	int client_size;
 	int nclients = 0; // number of clients
 	char *data;
-	int i;
+	int i=0;
 	int n;
 
 	if((server_id = init()) <= 0)
@@ -60,15 +61,42 @@ int main(int argc, char ** argv)
 
 	for(;;)
 	{
-		n=0;
-		if((n = recvfrom(server_id,data,10240,0,(struct sockaddr *)&clients[nclients], &client_size)) < 0)
+		i=n=0;
+		if((n = recvfrom(server_id,data,10240,0,(struct sockaddr *)&tmp_client, &client_size)) < 0)
 		{
 			perror("recvfrom() failed");
 		}
 		if(n > 0)
 		{
-			sendto(server_id,data,50,0,(struct sockaddr *)&clients[nclients], (socklen_t)client_size);
-			printf("echoing %s\r",data);
+			// find out if client exists in client list
+			for(i=0; i < nclients; i++)
+			{
+				if(clients[i].sin_addr.s_addr == tmp_client.sin_addr.s_addr)
+				{
+					break;
+				}
+			}
+			// a new client just sent us data
+			if(i == nclients)
+			{
+				clients[i].sin_addr = tmp_client.sin_addr;
+				clients[i].sin_family = tmp_client.sin_family;
+				clients[i].sin_port = tmp_client.sin_port;
+				nclients++;
+				printf("New client number %d connected\n",i);
+			}
+			
+			for(i=0; i < nclients; i++)
+			{
+				// dont return to sender
+				if(clients[i].sin_addr.s_addr != tmp_client.sin_addr.s_addr)
+				{
+					printf("%s",data);
+					sendto(server_id,data,strlen(data),0,(struct sockaddr *)&clients[i], (socklen_t)client_size);
+					//printf("echoing %s\r",data);
+				}
+			}
+			memset(data,0,strlen(data));
 		}
 	}
 
