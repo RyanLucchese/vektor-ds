@@ -45,6 +45,7 @@ int main(int argc, char ** argv)
 	int nclients = 0; // number of clients
 	char *data;
 	int i;
+	int n;
 
 	if((server_id = init()) <= 0)
 	{
@@ -59,11 +60,16 @@ int main(int argc, char ** argv)
 
 	for(;;)
 	{
-		if((recvfrom(server_id,data,10240,0,(struct sockaddr *)&clients[nclients], &client_size)) < 0)
+		n=0;
+		if((n = recvfrom(server_id,data,10240,0,(struct sockaddr *)&clients[nclients], &client_size)) < 0)
 		{
 			perror("recvfrom() failed");
 		}
-		printf("%s\r",data);
+		if(n > 0)
+		{
+			sendto(server_id,data,50,0,(struct sockaddr *)&clients[nclients], (socklen_t)client_size);
+			printf("echoing %s\r",data);
+		}
 	}
 
 	sleep(5);
