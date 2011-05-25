@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <poll.h>
 
 #define max(x,y) ((x) > (y) ? (x) : (y))
 

@@ -42,6 +42,7 @@ int main(int argc, char ** argv)
 	int server_id;
 	struct sockaddr_in *clients;
 	struct sockaddr_in tmp_client;
+	struct pollfd recvpoll;
 	int client_size;
 	int nclients = 0; // number of clients
 	char *data;
@@ -53,6 +54,10 @@ int main(int argc, char ** argv)
 		return -1;
 	}
 
+	recvpoll.fd = server_id;
+	recvpoll.events = POLLIN;
+	recvpoll.revents = 0;
+
 	// allocate space
 	clients = malloc(sizeof(*clients)*20);
 	data = calloc(sizeof(*data),10240);
@@ -62,9 +67,12 @@ int main(int argc, char ** argv)
 	for(;;)
 	{
 		i=n=0;
-		if((n = recvfrom(server_id,data,10240,0,(struct sockaddr *)&tmp_client, &client_size)) < 0)
+		if(poll(&recvpoll,1,250) > 0)
 		{
-			perror("recvfrom() failed");
+			if((n = recvfrom(server_id,data,10240,0,(struct sockaddr *)&tmp_client, &client_size)) < 0)
+			{
+				perror("recvfrom() failed");
+			}
 		}
 		if(n > 0)
 		{
